@@ -1,9 +1,6 @@
 <?php
 require_once($_SERVER["DOCUMENT_ROOT"].'settings/crest.php');
 
-// file_put_contents($_SERVER['DOCUMENT_ROOT'].'/logs.txt',
-// "Parameters:"."\n".print_r($_REQUEST, true)."\n", FILE_APPEND);
-
 //get parametres and add them to variables
 $arDocument = $_REQUEST['document_id'];
 $paramCity = $_REQUEST['properties']['city'];
@@ -36,7 +33,6 @@ if (is_array($arDocument))
 if ($lead_id) 
 {   
     $currentLead = CRest::call('crm.lead.get',['id' => $lead_id]);
-
     //robot will work only when LEAD STATUS_ID is NEW
     if ($currentLead['result']['STATUS_ID'] == "NEW")
     {
@@ -108,7 +104,6 @@ else if ($deal_id)
     $currentDeliveryAdres = $currentDeal['result'][$paramDeliveryAddress];
    
     //get current payment method - need to add to params ID field and field name
-    //390 is an ID of userfield payment methods in DEAL user forms
     $currentPaymentMethodId = $currentDeal['result'][$paramPaymentMethodName];
     $currentPaymentMethodFields = CRest::call('crm.deal.userfield.get',['ID' => $paramPaymentMethodId]);
     foreach ($currentPaymentMethodFields['result']['LIST'] as $allPayMethods) {
@@ -150,30 +145,25 @@ else if ($deal_id)
 }
 
  // Setup request to send json via POST raw
- $phpToJson = array(
-    "email" => $currentContactEmail,
-    "phone" => $currentContactPhone,
-    "name" => $currentContactName,
-    "city" => $currentCity,
-    "delivery_address" => $currentDeliveryAdres,
-    "payment_method" => $currentPaymentMethod,
-    "order_date" => $currentOrderDate,
-    "order_id" => $document_id,
-    "products" => $productsArray,
-    "order_sum" => $currentSum,
-    "payment_status" => $currentPaymentStatus,
-    "ttn_number" => $currentTtnNumber,
-    "ttn_date" => $currentTtnDate,
-    );
-
-        // file_put_contents($_SERVER['DOCUMENT_ROOT'].'/logs.txt',
-        // "Array:"."\n" . print_r($phpToJson, true)."\n", FILE_APPEND);
-  
+$phpToJson = array(
+"email" => $currentContactEmail,
+"phone" => $currentContactPhone,
+"name" => $currentContactName,
+"city" => $currentCity,
+"delivery_address" => $currentDeliveryAdres,
+"payment_method" => $currentPaymentMethod,
+"order_date" => $currentOrderDate,
+"order_id" => $document_id,
+"products" => $productsArray,
+"order_sum" => $currentSum,
+"payment_status" => $currentPaymentStatus,
+"ttn_number" => $currentTtnNumber,
+"ttn_date" => $currentTtnDate,
+);
 
 if ($lead_id) {
     $urlSendPulse = 'send_pulse_event_id';
-    sendJsonToSendPulse($urlSendPulse, $phpToJson);
-    
+    sendJsonToSendPulse($urlSendPulse, $phpToJson);  
 }
 else if ($deal_id)
 {
@@ -210,7 +200,6 @@ function sendJsonToSendPulse($urlSendPulse, $phpToJson)
 { 
     $curlInit = curl_init($urlSendPulse);
     $sendPulseArray = json_encode($phpToJson);
-
     curl_setopt($curlInit, CURLOPT_POSTFIELDS, $sendPulseArray);
     curl_setopt($curlInit, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
     curl_setopt($curlInit, CURLOPT_POST, true);
@@ -218,10 +207,6 @@ function sendJsonToSendPulse($urlSendPulse, $phpToJson)
     curl_setopt($curlInit, CURLOPT_SSL_VERIFYPEER, 0);    
     curl_setopt($curlInit, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($curlInit);
-    
-    // file_put_contents( $_SERVER['DOCUMENT_ROOT'].'/logs.txt',
-    // "Curl:"."\n".print_r($result, true)."\n", FILE_APPEND);
-
     curl_close($curlInit);
 }
 

@@ -1,8 +1,9 @@
 <?php
+include "webhook.php";
 //define('C_REST_CLIENT_ID','');  //Application ID
 //define('C_REST_CLIENT_SECRET',''); //Application key
 // or
-define('C_REST_WEB_HOOK_URL','HERE_MUST_BE_YOUR_BITRIX_INBOUND_WEBHOOK/'); //url on create Webhook
+define('C_REST_WEB_HOOK_URL', $webhook); //url on create Webhook
  
 //define('C_REST_CURRENT_ENCODING','windows-1251');
 //define('C_REST_IGNORE_SSL',true);//turn off validate ssl by curl

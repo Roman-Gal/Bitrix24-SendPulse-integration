@@ -37,6 +37,7 @@ $urlForRobot = $protocol.'://'.$host.explode('?', '/apps/robots/bitrix-sendpulse
  
  	function installRobot()
  	{
+		//install params, can be changed according to user requirements
  		var params = {
  			'CODE': 'bitrix-sendpulse-integration',
 			'HANDLER': <?=json_encode($urlForRobot)?>,
